@@ -10,8 +10,6 @@ Java school project - Library Management System
   - [BookLoanManagement](#bookloanmanagement)
 - [Getting Started](#getting-started)
 - [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Introduction
 
@@ -59,7 +57,3 @@ To run this application, specify in the arguments whether you want to run the ap
 ## Usage
 
 Provide instructions on how users can interact with your Library Management System and give examples of common commands or operations.
-
-## Contributing
-
-If you would like to contribute to the development of the BookStore project, please follow the guidelines in [CONTRIBUTING.md](CONTRIBUTING.md).
