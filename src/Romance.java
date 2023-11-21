@@ -12,7 +12,7 @@ public class Romance extends Book implements Borrowable{
     }
     @Override
     public int bookRequiresCredit() {
-        return 0;
+        return 6;
     }
 
 }

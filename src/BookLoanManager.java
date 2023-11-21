@@ -36,37 +36,40 @@ public class BookLoanManager {
         System.out.println("Enter the ISBN of the book that is borrowed");
         isbn = console.nextLong();
 
-        book = this.searchBookAfterIsbnInTheListOfBooksInStore(isbn);
+        try{
+            book = this.searchBookAfterIsbnInTheListOfBooksInStore(isbn);
 
-        if (user == null){
-            user = this.mId.inputInformationAboutUser();
-            this.mAllUsers.add(user);
-        }
-
-        if (!this.mAllBooksInStore.contains(book)) {
-            System.out.println("The book with the given ISBN doesn't exist");
-            return;
-        }
-
-        try {
-            BookLoan bl;
-
-            if (!(this.mUserAndLoanedBooksStorage).containsKey(user)) {
-                bl = new BookLoan(user);
-                if (book instanceof Borrowable && user instanceof Payable) {
-                    ((Payable) user).userPayCredit(((Borrowable) book).bookRequiresCredit());
-                }
-
-                this.mUserAndLoanedBooksStorage.put(user, bl);
-            } else {
-                bl = this.mUserAndLoanedBooksStorage.get(user);
+            if (user == null){
+                user = this.mId.inputInformationAboutUser();
+                this.mAllUsers.add(user);
             }
-            bl.addBookToUsersList(book);
-            isBookAdded = this.removingBorrowedBookFromStorage(book);
-        }catch(NoCreditException e){
-            System.out.println("Cannot borrow book: " + e.getMessage());
-        }
+    /*
+            if (!this.mAllBooksInStore.contains(book)) {
+                System.out.println("The book with the given ISBN doesn't exist");
+                return;
+            }*/
 
+            try {
+                BookLoan bl;
+
+                if (!(this.mUserAndLoanedBooksStorage).containsKey(user)) {
+                    bl = new BookLoan(user);
+                    if (book instanceof Borrowable && user instanceof Payable) {
+                        ((Payable) user).userPayCredit(((Borrowable) book).bookRequiresCredit());
+                    }
+
+                    this.mUserAndLoanedBooksStorage.put(user, bl);
+                } else {
+                    bl = this.mUserAndLoanedBooksStorage.get(user);
+                }
+                bl.addBookToUsersList(book);
+                isBookAdded = this.removingBorrowedBookFromStorage(book);
+            }catch(NoCreditException e){
+                System.out.println("Cannot borrow book: " + e.getMessage());
+            }
+        } catch (NoBookException e) {
+            System.out.println("Book not in store: " + e.getMessage());
+        }
     }
 
     public void printCurrentLoanersAndBookList() {
@@ -99,7 +102,6 @@ public class BookLoanManager {
             Scanner console = new Scanner(System.in);
 
             while (booleanAdd == 1) {
-                //here can be added an exception handling
                 System.out.println("Is there a new book in the bookstore? Then press 1. Otherwise press 0");
                 booleanAdd = console.nextInt();
                 this.mAllBooksInStore.add(pB);
@@ -165,7 +167,7 @@ public class BookLoanManager {
         return null;
     }
 
-    public Book searchBookAfterIsbnInTheListOfBooksInStore(long Isbn) {
+    public Book searchBookAfterIsbnInTheListOfBooksInStore(long Isbn) throws NoBookException{
         for (Book b : this.mAllBooksInStore) {
             if (b.getISBN() == Isbn) {
                 return b;

@@ -13,7 +13,7 @@ public class ScienceFiction extends Book implements Borrowable{
 
     @Override
     public int bookRequiresCredit() {
-        return 0;
+        return 8;
     }
 
 }
