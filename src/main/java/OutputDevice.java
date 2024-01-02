@@ -9,7 +9,7 @@ public class OutputDevice {
 
     public void printListOfUsers(ArrayList<User> users) {
         for (User user:users) {
-            System.out.println(user.getName());
+            System.out.println(user.getFirstName() + " " + user.getLastName());
         }
     }
 
@@ -23,7 +23,7 @@ public class OutputDevice {
     public void printDetailsAboutUser(User u) {
         System.out.println("ID: " + u.getID());
         System.out.println("First name: " + u.getFirstName());
-        System.out.println("Name: " + u.getName());
+        System.out.println("Name: " + u.getLastName());
         System.out.println("Category: " + u.getCategory());
         System.out.println("Age: " + u.getAge());
     }

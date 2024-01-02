@@ -1,9 +1,11 @@
 import java.util.ArrayList;
 
-public class LiteraryFiction extends Book implements Borrowable{
+public class Fantasy extends Book implements Borrowable{
     ArrayList<Book> books = new ArrayList<>();
 
-    public LiteraryFiction(String pName, String pAuthor, String pGenre, double pPrice, long pISBN) {
+    public Fantasy() {}
+
+    public Fantasy(String pName, String pAuthor, String pGenre, double pPrice, long pISBN) {
         super(pName, pAuthor, pGenre, pPrice, pISBN);
     }
 
@@ -13,7 +15,7 @@ public class LiteraryFiction extends Book implements Borrowable{
 
     @Override
     public int bookRequiresCredit() {
-        return 3;
+        return 6;
     }
 
 }

@@ -3,8 +3,9 @@ import java.util.ArrayList;
 
 public class BookLoan implements Serializable {
     private ArrayList<Book> mListOfBooks = new ArrayList<>();
-    private final User mUser;
+    private User mUser;
 
+    public BookLoan() {};
     public BookLoan(User pUser) {
         this.mUser = pUser;
     }
@@ -24,6 +25,8 @@ public class BookLoan implements Serializable {
     public User getUser() {
         return this.mUser;
     }
+    public void setUser(User mUser) { this.mUser = mUser; }
+
 
     @Override
     public String toString() {
