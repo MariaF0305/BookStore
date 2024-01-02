@@ -1,5 +1,3 @@
-import main.SaveDBThread;
-
 import java.io.IOException;
 import java.util.Scanner;
 
