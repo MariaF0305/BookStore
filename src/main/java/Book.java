@@ -9,11 +9,12 @@ import java.io.Serializable;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = Classics.class, name = "Classics"),
         @JsonSubTypes.Type(value = CrimeThriller.class, name = "ChrimeThriller"),
-        @JsonSubTypes.Type(value = Fantasy.class, name = "HistoricalFiction"),
-        @JsonSubTypes.Type(value = Fantasy.class, name = "LiteraryFiction"),
-        @JsonSubTypes.Type(value = Fantasy.class, name = "Romance"),
-        @JsonSubTypes.Type(value = Fantasy.class, name = "ScienceFiction"),
-        @JsonSubTypes.Type(value = Fantasy.class, name = "YoungAdult") }
+        @JsonSubTypes.Type(value = Fantasy.class, name = "Fantasy"),
+        @JsonSubTypes.Type(value = HistoricalFiction.class, name = "HistoricalFiction"),
+        @JsonSubTypes.Type(value = LiteraryFiction.class, name = "LiteraryFiction"),
+        @JsonSubTypes.Type(value = Romance.class, name = "Romance"),
+        @JsonSubTypes.Type(value = ScienceFiction.class, name = "ScienceFiction"),
+        @JsonSubTypes.Type(value = YoungAdult.class, name = "YoungAdult") }
 )
 
 public abstract class Book implements  Serializable {
