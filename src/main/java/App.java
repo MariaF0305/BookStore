@@ -125,6 +125,8 @@ public class App {
                 System.out.println();
             }
         }
+
+        thread.stopThread();
     }
 
 }
