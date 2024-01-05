@@ -7,7 +7,15 @@ public class App {
     OutputDevice od = new OutputDevice();
     int choose = 0;
 
-    public App() throws IOException {
+
+    private static App instance = null;
+
+    public static synchronized App getInstance() throws IOException {
+        if (instance == null) {
+            instance = new App();
+        }
+
+        return instance;
     }
 
     public void run (String[] args) throws NoBookException, IOException {

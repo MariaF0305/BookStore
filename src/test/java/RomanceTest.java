@@ -1,19 +1,19 @@
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-public class BookTest {
+import static org.junit.jupiter.api.Assertions.*;
+
+class RomanceTest {
 
     @Test
-    public  void testBookConstructor () {
+    public void testRomanceConstructor() {
 
         String testName = "Book Name";
         String testAuthor = "Book Author";
-        String testGenre = "Science Fiction";
+        String testGenre = "Romance";
         double testPrice = 34.59;
         long testISBN = 939382929;
 
-        ScienceFiction testBook = new ScienceFiction(testName, testAuthor, testGenre, testPrice, testISBN);
+        Romance testBook = new Romance(testName, testAuthor, testGenre, testPrice, testISBN);
 
         assertEquals(testName, testBook.getName());
         assertEquals(testAuthor, testBook.getAuthor());

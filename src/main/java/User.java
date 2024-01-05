@@ -46,7 +46,7 @@ public abstract class User implements Serializable {
 
 
         @Override
-        public String toString() { return (this.mName + " " + this.mFirstName + " Credit: " /*+ this.credit*/); }
+        public String toString() { return (this.mName + " " + this.mFirstName + " Credit: " + this.credit); }
 
         public void payCredit(int credit){
             this.credit = this.credit - credit;

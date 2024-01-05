@@ -18,8 +18,4 @@ public class Classics extends Book implements Borrowable{
         return 4;
     }
 
-    @Override
-    public String toString() {
-        return "Genre: Classics " + super.toString();
-    }
 }
