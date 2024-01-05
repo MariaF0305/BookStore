@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 public class BookTest {
 
+    @Test
     public  void testBookConstructor () {
 
         String testName = "Book Name";
@@ -20,7 +21,7 @@ public class BookTest {
         assertEquals(testPrice, testBook.getPrice());
         assertEquals(testISBN, testBook.getISBN());
 
-        assertEquals(testName + testAuthor, testBook.toString());
+        assertEquals(testName + " / " + testAuthor, testBook.toString());
 
     }
 

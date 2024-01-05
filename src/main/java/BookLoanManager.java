@@ -1,343 +1,205 @@
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
 
-public class BookLoanManager {
-    private HashMap<User,BookLoan> mUserAndLoanedBooksStorage;
-    private ArrayList<Book> mAllBooksInStore;
-    private ArrayList<User> mAllUsers;
-    private InputDevice mId;
+public abstract class BookLoanManager {
 
-    private final  String USERS_FILE_NAME = "Users.json";
-    private final  String BOOK_FILE_NAME = "Books.json";
-    private final  String LOAN_FILE_NAME = "Loan.json";
+  protected HashMap<User, BookLoan> mUserAndLoanedBooksStorage = null;
+  protected ArrayList<Book> mAllBooksInStore = null;
+  protected ArrayList<User> mAllUsers = null;
+  protected InputDevice mId = null;
 
-    private static BookLoanManager instance = null;
+  private final String USERS_FILE_NAME = "Users.json";
+  private final String BOOK_FILE_NAME = "Books.json";
+  private final String LOAN_FILE_NAME = "Loan.json";
 
-    public static synchronized BookLoanManager getInstance() throws IOException{
-        if (instance == null){
-            instance = new BookLoanManager();
-        }
+  private static BookLoanManager instance = null;
 
-        return instance;
-    }
-    private BookLoanManager () throws IOException {
-        this.mUserAndLoanedBooksStorage = new HashMap<User,BookLoan>();
-        this.mAllBooksInStore = new ArrayList<Book>();
-        this.mAllUsers = new ArrayList<>();
-        this.mId = new InputDevice();
-
-        loadDB();
+  public static synchronized BookLoanManager getInstance() throws IOException {
+    if (instance == null) {
+      instance = new BookLoanManagerDB();
     }
 
-    public void addBookToListOfBorrowedBooksFromAUser() {
-        boolean isBookAdded = false;
-        long isbn, id;
-        Book book;
-        User user;
-        Scanner console = new Scanner(System.in);
+    return instance;
+  }
 
-        System.out.println("Write the ID of the User which wants to borrow a book");
-        id = console.nextLong();
+  public void addBookToListOfBorrowedBooksFromAUser() {
+    boolean isBookAdded = false;
+    long isbn, id;
+    Book book;
+    User user;
+    final Scanner console = new Scanner(System.in);
 
-        user = this.searchUserAfterIdInTheLIsOfBooksInStore(id);
+    System.out.println("Write the ID of the User which wants to borrow a book");
+    id = console.nextLong();
 
-        System.out.println("Enter the ISBN of the book that is borrowed");
-        isbn = console.nextLong();
+    user = searchUserAfterIdInTheLIsOfBooksInStore(id);
 
-        try{
-            book = this.searchBookAfterIsbnInTheListOfBooksInStore(isbn);
+    System.out.println("Enter the ISBN of the book that is borrowed");
+    isbn = console.nextLong();
 
-            if (user == null){
-                user = this.mId.inputInformationAboutUser();
-                this.mAllUsers.add(user);
-            }
+    try {
+      book = searchBookAfterIsbnInTheListOfBooksInStore(isbn);
 
-            try {
-                BookLoan bl;
+      if (user == null) {
+        user = mId.inputInformationAboutUser();
+        mAllUsers.add(user);
+      }
 
-                if (!(this.mUserAndLoanedBooksStorage).containsKey(user)) {
-                    bl = new BookLoan(user);
-                    if (book instanceof Borrowable && user instanceof Payable) {
-                        ((Payable) user).userPayCredit(((Borrowable) book).bookRequiresCredit());
-                    }
+      try {
+        BookLoan bl;
 
-                    this.mUserAndLoanedBooksStorage.put(user, bl);
-                } else {
-                    bl = this.mUserAndLoanedBooksStorage.get(user);
-                }
-                bl.addBookToUsersList(book);
-                isBookAdded = this.removingBorrowedBookFromStorage(book);
-            }catch(NoCreditException e){
-                System.out.println("Cannot borrow book: " + e.getMessage());
-            }
-        } catch (NoBookException e) {
-            System.out.println("Book not in store: " + e.getMessage());
+        if (!(mUserAndLoanedBooksStorage).containsKey(user)) {
+          bl = new BookLoan(user);
+          if (book instanceof Borrowable && user instanceof Payable) {
+            ((Payable) user).userPayCredit(((Borrowable) book).bookRequiresCredit());
+          }
+
+          mUserAndLoanedBooksStorage.put(user, bl);
+        } else {
+          bl = mUserAndLoanedBooksStorage.get(user);
         }
+        bl.addBookToUsersList(book);
+        isBookAdded = removingBorrowedBookFromStorage(book);
+      } catch (final NoCreditException e) {
+        System.out.println("Cannot borrow book: " + e.getMessage());
+      }
+    } catch (final NoBookException e) {
+      System.out.println("Book not in store: " + e.getMessage());
+    }
+  }
+
+  public void printCurrentLoanersAndBookList() {
+    for (final BookLoan bl : mUserAndLoanedBooksStorage.values()) {
+      System.out.println(bl);
+    }
+  }
+
+  // here I add a book for the store
+  public void addABookToStore() {
+    boolean isLoaned = false;
+    Book pB = mId.inputInformationAboutBook();
+
+    System.out.println("First check if this book is borrowed");
+    for (final BookLoan bl : mUserAndLoanedBooksStorage.values()) {
+      for (final Book b : bl.getListOfBooks()) {
+        if (b.equals(pB)) {
+          isLoaned = true;
+          mAllBooksInStore.add(pB);
+          bl.remove(pB);
+          System.out.println("The book is borrowed");
+          break;
+        }
+      }
     }
 
-    public void printCurrentLoanersAndBookList() {
-        for (BookLoan bl:this.mUserAndLoanedBooksStorage.values()){
-            System.out.println(bl);
+    if (!isLoaned) {
+      System.out.println("The book is not borrowed. It will be added to the bookstore");
+      int booleanAdd = 1;
+      final Scanner console = new Scanner(System.in);
+
+      while (booleanAdd == 1) {
+        System.out.println("Is there a new book in the bookstore? Then press 1. Otherwise press 0");
+        booleanAdd = console.nextInt();
+        mAllBooksInStore.add(pB);
+        if (booleanAdd == 1) {
+          pB = mId.inputInformationAboutBook();
         }
+      }
+    }
+  }
+
+  public boolean removingBorrowedBookFromStorage(final Book pBook) {
+    boolean isBookRemoved = false;
+
+    if (mAllBooksInStore.contains(pBook)) {
+      isBookRemoved = true;
+      mAllBooksInStore.remove(pBook);
     }
 
-    // here I add a book for the store
-    public void addABookToStore() {
-        boolean isLoaned = false;
-        Book pB = this.mId.inputInformationAboutBook();
+    return isBookRemoved;
+  }
 
-        System.out.println("First check if this book is borrowed");
-        for (BookLoan bl:this.mUserAndLoanedBooksStorage.values()){
-            for (Book b : bl.getListOfBooks()) {
-                if (b.equals(pB)) {
-                    isLoaned = true;
-                    this.mAllBooksInStore.add(pB);
-                    bl.remove(pB);
-                    System.out.println("The book is borrowed");
-                    break;
-                }
-            }
+  public void addAUserToThisLibrary() {
+    int booleanAdd = 1;
+    User pU;
+
+    final Scanner console = new Scanner(System.in);
+    pU = mId.inputInformationAboutUser();
+
+    while (booleanAdd == 1) {
+      // here can be added an exception handling
+      mAllUsers.add(pU);
+      System.out.println("Is there a new user in the bookstore? Then press 1. Otherwise press 0");
+      booleanAdd = console.nextInt();
+      if (booleanAdd == 1) {
+        pU = mId.inputInformationAboutUser();
+      }
+    }
+  }
+
+  public void theUserBroughtTheLoanedBookBackToStore() {
+    long Isbn;
+    final long Id;
+
+    final Scanner console = new Scanner(System.in);
+    System.out.println("Enter the ISBN from the book that was brought back");
+
+    Book book;
+    Isbn = mId.inputTheIdForUserYouSearchingAfter();
+    book = searchBookAfterIsbnInTheWholeDictionary(Isbn);
+    mAllBooksInStore.add(book);
+    System.out.println("The book that was brought back was added back to the store");
+    mUserAndLoanedBooksStorage.remove(book);
+  }
+
+  public Book searchBookAfterIsbnInTheWholeDictionary(final long pIsbn) {
+    for (final BookLoan bl : mUserAndLoanedBooksStorage.values()) {
+      for (final Book b : bl.getListOfBooks()) {
+        if (b.getISBN() == pIsbn) {
+          System.out.println("Book with the searched ISBN was found");
+          return b;
         }
+      }
+    }
+    return null;
+  }
 
-        if (!isLoaned) {
-            System.out.println("The book is not borrowed. It will be added to the bookstore");
-            int booleanAdd = 1;
-            Scanner console = new Scanner(System.in);
-
-            while (booleanAdd == 1) {
-                System.out.println("Is there a new book in the bookstore? Then press 1. Otherwise press 0");
-                booleanAdd = console.nextInt();
-                this.mAllBooksInStore.add(pB);
-                if (booleanAdd == 1) {
-                    pB = mId.inputInformationAboutBook();
-                }
-            }
-        }
+  public Book searchBookAfterIsbnInTheListOfBooksInStore(final long Isbn) throws NoBookException {
+    for (final Book b : mAllBooksInStore) {
+      if (b.getISBN() == Isbn) {
+        return b;
+      }
     }
 
-    public boolean removingBorrowedBookFromStorage (Book pBook) {
-         boolean isBookRemoved = false;
+    return null;
+  }
 
-         if (this.mAllBooksInStore.contains(pBook)) {
-             isBookRemoved = true;
-             this.mAllBooksInStore.remove(pBook);
-         }
-
-         return isBookRemoved;
+  public User searchUserAfterIdInTheLIsOfBooksInStore(final long Id) {
+    for (final User u : mAllUsers) {
+      if (u.getID() == Id) {
+        return u;
+      }
     }
 
-    public void addAUserToThisLibrary() {
-        int booleanAdd = 1;
-        User pU;
+    return null;
+  }
 
-        Scanner console = new Scanner(System.in);
-        pU = this.mId.inputInformationAboutUser();
-
-        while (booleanAdd == 1) {
-            //here can be added an exception handling
-            this.mAllUsers.add(pU);
-            System.out.println("Is there a new user in the bookstore? Then press 1. Otherwise press 0");
-            booleanAdd = console.nextInt();
-            if (booleanAdd == 1) {
-                pU = this.mId.inputInformationAboutUser();
-            }
-        }
+  public ArrayList<Book> getAllBooksFromStore() throws IOException {
+    if (mAllBooksInStore == null) {
+      loadDB();
     }
 
-    public void theUserBroughtTheLoanedBookBackToStore () {
-        long Isbn, Id;
+    return mAllBooksInStore;
+  }
 
-        Scanner console = new Scanner(System.in);
-        System.out.println("Enter the ISBN from the book that was brought back");
+  public ArrayList<User> getAllUsers() {
+    return mAllUsers;
+  }
 
-        Book book;
-        Isbn = mId.inputTheIdForUserYouSearchingAfter();
-        book = this.searchBookAfterIsbnInTheWholeDictionary(Isbn);
-        this.mAllBooksInStore.add(book);
-        System.out.println("The book that was brought back was added back to the store");
-        this.mUserAndLoanedBooksStorage.remove(book);
-    }
+  abstract public void saveDB() throws IOException;
 
-    public Book searchBookAfterIsbnInTheWholeDictionary(long pIsbn) {
-        for (BookLoan bl : this.mUserAndLoanedBooksStorage.values()) {
-            for (Book b : bl.getListOfBooks()) {
-                if (b.getISBN() == pIsbn) {
-                    System.out.println("Book with the searched ISBN was found");
-                    return b;
-                }
-            }
-        }
-        return null;
-    }
-
-    public Book searchBookAfterIsbnInTheListOfBooksInStore(long Isbn) throws NoBookException{
-        for (Book b : this.mAllBooksInStore) {
-            if (b.getISBN() == Isbn) {
-                return b;
-            }
-        }
-
-        return null;
-    }
-
-    public User searchUserAfterIdInTheLIsOfBooksInStore (long Id) {
-        for (User u : this.mAllUsers) {
-            if (u.getID() == Id) {
-                return u;
-            }
-        }
-
-        return null;
-    }
-
-    public ArrayList<Book> getAllBooksFromStore() throws IOException {
-        if (this.mAllBooksInStore == null) {
-            this.loadDB();
-        }
-
-        return this.mAllBooksInStore;
-    }
-
-    public ArrayList<User> getAllUsers() {
-        return this.mAllUsers;
-    }
-
-    public synchronized void saveDB() throws IOException {
-
-        BufferedWriter myWriter = null;
-        ObjectMapper mapper = new ObjectMapper();
-
-        try {
-            myWriter = new BufferedWriter(new FileWriter(USERS_FILE_NAME));
-
-            for (User user:this.mAllUsers){
-                myWriter.write(mapper.writeValueAsString(user));
-                myWriter.newLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (myWriter != null) {
-                try {
-                    myWriter.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        try {
-            myWriter = new BufferedWriter(new FileWriter(BOOK_FILE_NAME));
-
-            for (Book book:this.mAllBooksInStore){
-                myWriter.write(mapper.writeValueAsString(book));
-                myWriter.newLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (myWriter != null) {
-                try {
-                    myWriter.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        try {
-            myWriter = new BufferedWriter(new FileWriter(LOAN_FILE_NAME));
-
-            for (BookLoan loan:this.mUserAndLoanedBooksStorage.values()){
-                myWriter.write(mapper.writeValueAsString(loan));
-                myWriter.newLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (myWriter != null) {
-                try {
-                    myWriter.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    void loadDB() throws IOException {
-
-        ObjectMapper mapper = new ObjectMapper();
-        BufferedReader myReader = null;
-
-        try {
-            myReader = new BufferedReader(new FileReader(USERS_FILE_NAME));
-            String json = null;
-
-            while ((json = myReader.readLine()) != null){
-
-                User user = mapper.readValue(json, User.class);
-                this.mAllUsers.add(user);
-
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (myReader != null) {
-                try {
-                    myReader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        try {
-            myReader = new BufferedReader(new FileReader(BOOK_FILE_NAME));
-            String json = null;
-
-            while ((json = myReader.readLine()) != null){
-
-                Book book = mapper.readValue(json, Book.class);
-                this.mAllBooksInStore.add(book);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (myReader != null) {
-                try {
-                    myReader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        try {
-            myReader = new BufferedReader(new FileReader(LOAN_FILE_NAME));
-            String json = null;
-
-            while ((json = myReader.readLine()) != null){
-
-
-                BookLoan loan = mapper.readValue(json, BookLoan.class);
-                this.mUserAndLoanedBooksStorage.put(loan.getUser(), loan);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (myReader != null) {
-                try {
-                    myReader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+  abstract void loadDB() throws IOException;
 }
