@@ -10,6 +10,9 @@ public class App {
 
     private static App instance = null;
 
+    public App() throws IOException {
+    }
+
     public static synchronized App getInstance() throws IOException {
         if (instance == null) {
             instance = new App();

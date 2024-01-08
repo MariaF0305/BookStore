@@ -25,4 +25,5 @@ public class StudentTest {
 
         assertEquals(testName + " " + testFirstName + " Credit: " + testStudent.getCredit(), testStudent.toString());
     }
+
 }
