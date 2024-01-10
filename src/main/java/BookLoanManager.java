@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 
@@ -98,11 +99,24 @@ public abstract class BookLoanManager {
     if (!isLoaned) {
       System.out.println("The book is not borrowed. It will be added to the bookstore");
       int booleanAdd = 1;
+      boolean checker;
       final Scanner console = new Scanner(System.in);
 
       while (booleanAdd == 1) {
         System.out.println("Is there a new book in the bookstore? Then press 1. Otherwise press 0");
-        booleanAdd = console.nextInt();
+
+        do {
+          try {
+            booleanAdd = console.nextInt();
+            checker = true;
+          } catch (InputMismatchException e) {
+            System.out.println("You didn't enter a number. PLEASE enter a NUMBER");
+            checker = false;
+            console.nextLine();
+          }
+
+        } while (!checker);
+
         mAllBooksInStore.add(pB);
         if (booleanAdd == 1) {
           pB = mId.inputInformationAboutBook();
@@ -150,9 +164,20 @@ public abstract class BookLoanManager {
     Book book;
     Isbn = mId.inputTheIdForUserYouSearchingAfter();
     book = searchBookAfterIsbnInTheWholeDictionary(Isbn);
-    mAllBooksInStore.add(book);
-    System.out.println("The book that was brought back was added back to the store");
-    mUserAndLoanedBooksStorage.remove(book);
+
+    for (BookLoan bl : mUserAndLoanedBooksStorage.values()) {
+      for (Book b : bl.getListOfBooks()) {
+        if (b.equals(book)) {
+          this.mAllBooksInStore.add(book);
+          System.out.println("The book that was brought back was added back to the store");
+          bl.getListOfBooks().remove(book);
+          if (bl.getListOfBooks().isEmpty()) {
+            this.mUserAndLoanedBooksStorage.remove(bl.getUser());
+          }
+          break;
+        }
+      }
+    }
   }
 
   public Book searchBookAfterIsbnInTheWholeDictionary(final long pIsbn) {
