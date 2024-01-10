@@ -1,31 +1,82 @@
-import java.awt.*;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class InputDevice {
     public Book inputInformationAboutBook() {
         String name, author;
         int numberGenre = 0;
-        double price;
-        long ISBN;
+        double price = 0;
+        long ISBN = 0;
+
+        boolean checker = false;
 
         Scanner console = new Scanner(System.in);
 
-        System.out.println("Enter the title of the book");
-        name = console.nextLine();
+        do {
+            System.out.println("Enter the title of the book");
+            name = console.nextLine();
 
-        System.out.println("Enter the author of the book");
-        author = console.nextLine();
+            checker = inputFrazeChecker(name);
+        } while (!checker);
 
-        System.out.println("Enter the price of the book");
-        price = console.nextDouble();
+        do {
+            System.out.println("Enter the author of the book");
+            author = console.nextLine();
 
-        System.out.println("Enter the ISBn of the book");
-        ISBN = console.nextLong();
+            checker = inputFrazeChecker(author);
+        } while (!checker);
 
 
-        System.out.println("Enter a number between 1-8 representing the following genres: \n 1. Chrime/Thriller \n 2. Classics \n 3. Fantasy \n" +
+        do {
+
+            try {
+
+                System.out.println("Enter the price of the book");
+                price = console.nextDouble();
+                if (Double.isFinite(price)) {
+                    checker = true;
+                } else {
+                    System.out.println("You didn't enter a valid number. PLEASE enter a NUMBER");
+                    checker = false;
+                    console.nextLine();
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("You didn't enter a number. PLEASE enter a NUMBER");
+                checker = false;
+                console.nextLine();
+            }
+
+        } while (!checker);
+
+
+        do {
+
+            try {
+                System.out.println("Enter the ISBN of the book");
+                ISBN = console.nextLong();
+                checker = true;
+            } catch (InputMismatchException e) {
+                System.out.println("You didn't enter a number. PLEASE enter a NUMBER");
+                checker = false;
+                console.nextLine();
+            }
+
+        } while (!checker);
+
+        System.out.println("Enter a number between 1-8 representing the following genres: \n 1. Crime/Thriller \n 2. Classics \n 3. Fantasy \n" +
                 " 4. Historical Fiction \n 5. Literary Fiction \n 6. Romance \n 7. Science Fiction \n 8. Young Adult");
-        numberGenre = console.nextInt();
+        do {
+
+            try {
+                numberGenre = console.nextInt();
+                checker = true;
+            } catch (InputMismatchException e) {
+                System.out.println("You didn't enter a number. PLEASE enter a NUMBER");
+                checker = false;
+                console.nextLine();
+            }
+
+        } while (!checker);
 
         try {
             switch(numberGenre) {
@@ -72,26 +123,69 @@ public class InputDevice {
 
     public User inputInformationAboutUser() {
         String firstName, name;
-        int age, nr_category = 0;
-        long ID;
+        int age = 0, nr_category = 0;
+        long ID = 0;
 
+        boolean checker = false; 
+        
         Scanner console = new Scanner(System.in);
 
-        System.out.println("Write first name of the user");
-        firstName = console.nextLine();
+        do {
+            System.out.println("Write first name of the user");
+            firstName = console.nextLine();
 
-        System.out.println("Write name of the user");
-        name = console.nextLine();
+            checker = inputFrazeChecker(firstName);
+        } while (!checker);
 
-        System.out.println("Write the age of the user");
-        age = console.nextInt();
+        do {
+            System.out.println("Write name of the user");
+            name = console.nextLine();
 
-        System.out.println("Write the ID of the user");
-        ID = console.nextLong();
+            checker = inputFrazeChecker(name);
+        } while (!checker);
 
+        do {
+
+            try {
+                System.out.println("Write the age of the user");
+                age = console.nextInt();
+                checker = true;
+            } catch (InputMismatchException e) {
+                System.out.println("You didn't enter a number. PLEASE enter a NUMBER");
+                checker = false;
+                console.nextLine();
+            }
+
+        } while (!checker);
+
+        do {
+
+            try {
+                System.out.println("Write the ID of the user");
+                ID = console.nextLong();
+                checker = true;
+            } catch (InputMismatchException e) {
+                System.out.println("You didn't enter a number. PLEASE enter a NUMBER");
+                checker = false;
+                console.nextLine();
+            }
+
+        } while (!checker);
 
         System.out.println("Enter a number between 1-3 to chose with of the category the user belongs: \n 1. Student \n 2. Teacher \n 3. Regular Customer");
-        nr_category = console.nextInt();
+
+        do {
+
+            try {
+                nr_category = console.nextInt();
+                checker = true;
+            } catch (InputMismatchException e) {
+                System.out.println("You didn't enter a number. PLEASE enter a NUMBER");
+                checker = false;
+                console.nextLine();
+            }
+
+        } while (!checker);
 
         try {
             switch (nr_category) {
@@ -114,20 +208,64 @@ public class InputDevice {
     }
 
     public long inputTheIsbnFromBookYouSearchingAfter () {
-        long Isbn;
+        long Isbn = 0;
+        boolean checker = false;
 
         Scanner console = new Scanner(System.in);
-        Isbn = console.nextLong();
+
+        do {
+
+            try {
+                Isbn = console.nextLong();
+                checker = true;
+            } catch (InputMismatchException e) {
+                System.out.println("You didn't enter a number. PLEASE enter a NUMBER");
+                checker = false;
+                console.nextLine();
+            }
+
+        } while (!checker);
+
 
         return Isbn;
     }
 
     public long inputTheIdForUserYouSearchingAfter () {
-        long Id;
+        long Id = 0;
+        boolean checker = false;
 
         Scanner console = new Scanner(System.in);
-        Id = console.nextLong();
+
+        do {
+
+            try {
+                Id = console.nextLong();
+                checker = true;
+            } catch (InputMismatchException e) {
+                System.out.println("You didn't enter a number. PLEASE enter a NUMBER");
+                checker = false;
+                console.nextLine();
+            }
+
+        } while (!checker);
 
         return Id;
     }
+
+    private boolean inputFrazeChecker(String fraze) {
+        //Check if the array is not empty
+        if (fraze.isEmpty()) {
+            System.out.println("\nYou didn't enter anything. PLEASE enter LETTERS. Try again.\n");
+            return false;
+        }
+
+        //Check if the array does not have only empty space
+        if (fraze.trim().isEmpty()) {
+            System.out.println("\nYou only entered empty spaces. PLEASE enter LETTERS. Try again.\n");
+            return false;
+        }
+
+        return true;
+    }
+
 }
