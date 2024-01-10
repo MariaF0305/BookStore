@@ -32,7 +32,7 @@ public class BookLoanManagerDB extends BookLoanManager {
         // db parameters
         // final URL dbURL = getClass().getClassLoader().getResource("BookStore");
         // create a connection to the database
-        conn = DriverManager.getConnection("jdbc:sqlite:" + "C:/maria/PerioadaFacultatii/Anul_2/Semestrul1/Programing3/Project/BookStore.db");
+        conn = DriverManager.getConnection("jdbc:sqlite:" + "C:/maria/PerioadaFacultatii/Anul_2/Semestrul1/Programing3/BookStoreOrig/BookStore.db");
       }
     } catch (final SQLException e) {
       e.printStackTrace();
