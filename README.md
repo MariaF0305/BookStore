@@ -5,8 +5,8 @@ Java school project - Library Management System
 - [Introduction](#introduction)
 - [Features](#features)
 - [Classes](#classes)
-  - [Book](#book)
-  - [User](#user)
+  - [myapp.Book](#book)
+  - [myapp.User](#user)
   - [BookLoanManagement](#bookloanmanagement)
 - [Getting Started](#getting-started)
 - [Usage](#usage)
@@ -19,17 +19,17 @@ The BookStore project is a Java-based Library Management System designed to assi
 
 List the key features of your Library Management System.
 
-- **Book Management:**
+- **myapp.Book Management:**
   - Add a new book
   - Remove a book
   - Display a list of all books
 
-- **User Management:**
+- **myapp.User Management:**
   - Add a new user
   - Remove a user
   - Display a list of all users
 
-- **Book Loan Management:**
+- **myapp.Book Loan Management:**
   - Check out a book to a user
   - Return a book
   - Display a list of all book loans
@@ -38,13 +38,13 @@ List the key features of your Library Management System.
 
 The main class in this project is `BookLoanManagement`. It manages users with their list of borrowed books, their payment, and also saves all the necessary information.
 
-### Book
+### myapp.Book
 
-The `Book` class represents a book in the library. It contains information such as the book's title, author, ISBN, and availability status.
+The `myapp.Book` class represents a book in the library. It contains information such as the book's title, author, ISBN, and availability status.
 
-### User
+### myapp.User
 
-The `User` class represents a library user. It includes information such as the user's name, contact details, and a unique user ID.
+The `myapp.User` class represents a library user. It includes information such as the user's name, contact details, and a unique user ID.
 
 ### BookLoanManagement
 
